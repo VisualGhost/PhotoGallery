@@ -1,6 +1,8 @@
 package com.photogallery.networking;
 
 import com.google.gson.Gson;
+import com.photogallery.BuildConfig;
+import com.photogallery.util.DebugLogger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,10 +14,13 @@ import okhttp3.Response;
 
 public class ApiClientImpl implements ApiClient {
 
+    private static String TAG = ApiClientImpl.class.getSimpleName();
+    private static final String BASE_URL = BuildConfig.BASE_URL;
+
     @Override
-    public ParsedModel call(String url) {
+    public ParsedModel call(int page) {
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url(url).build();
+        Request request = new Request.Builder().url(getUrlForPage(page)).build();
         ReceivedData receivedData = null;
         try {
             Response response = client.newCall(request).execute();
@@ -29,10 +34,13 @@ public class ApiClientImpl implements ApiClient {
                 reader.close();
             }
         } catch (IOException e) {
-            // TODO add logging
+            DebugLogger.e(TAG, e.toString());
         }
 
-        // TODO do we need to create a new object every time?
         return new ParsedModelImpl(receivedData);
+    }
+
+    private String getUrlForPage(int page) {
+        return String.format(BASE_URL, page);
     }
 }
