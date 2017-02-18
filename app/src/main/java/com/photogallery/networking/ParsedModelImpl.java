@@ -15,16 +15,16 @@ class ParsedModelImpl implements ParsedModel {
 
     @Override
     public String getCurrentPageNumber() {
-        return mReceivedData != null ? mReceivedData.current_page : INVALID_PAGE_NUMBER;
+        return mReceivedData != null ? mReceivedData.getCurrentPage() : INVALID_PAGE_NUMBER;
     }
 
     @Override
     public String getTotalPageNumber() {
-        return mReceivedData != null ? mReceivedData.total_pages : INVALID_PAGE_NUMBER;
+        return mReceivedData != null ? mReceivedData.getTotalPages() : INVALID_PAGE_NUMBER;
     }
 
     @Override
     public List<Photo> getPhotoList() {
-        return mReceivedData != null ? mReceivedData.photos : Collections.<Photo>emptyList();
+        return mReceivedData != null ? mReceivedData.getPhotos() : Collections.<Photo>emptyList();
     }
 }
