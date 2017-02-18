@@ -1,6 +1,7 @@
 package com.photogallery.di;
 
 import com.photogallery.MainActivity;
+import com.photogallery.loader.PhotoLoader;
 
 import javax.inject.Singleton;
 
@@ -10,6 +11,6 @@ import dagger.Component;
 @Component(modules = AppModule.class)
 public interface AppComponent {
 
-    void inject(MainActivity mainActivity);
+    void inject(PhotoLoader photoLoader);
 
 }

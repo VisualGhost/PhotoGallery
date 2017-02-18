@@ -1,35 +1,36 @@
 package com.photogallery;
 
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 
-import com.photogallery.networking.ApiClient;
+import com.photogallery.loader.PhotoLoader;
 import com.photogallery.networking.ParsedModel;
 import com.photogallery.util.DebugLogger;
 
-import javax.inject.Inject;
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ParsedModel> {
 
-public class MainActivity extends AppCompatActivity {
-
-    @Inject
-    public ApiClient mApiClient;
+    private static int PHOTO_LOADER_ID = 0;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        CustomApplication.getAppComponent().inject(this);
-
-
         setContentView(R.layout.activity_main);
+        getSupportLoaderManager().initLoader(PHOTO_LOADER_ID, null, this);
+    }
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ParsedModel parsedModel = mApiClient.call(1);
-                DebugLogger.d("Test", "parsed model: " + parsedModel.getPhotoList().get(0).getUser().getFullName());
-            }
-        }).start();
+    @Override
+    public Loader<ParsedModel> onCreateLoader(int id, Bundle args) {
+        return new PhotoLoader(getApplication());
+    }
 
+    @Override
+    public void onLoadFinished(Loader<ParsedModel> loader, ParsedModel data) {
+    }
+
+    @Override
+    public void onLoaderReset(Loader<ParsedModel> loader) {
     }
 }

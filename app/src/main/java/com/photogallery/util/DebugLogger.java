@@ -53,4 +53,10 @@ public class DebugLogger {
         }
     }
 
+    public static void d(String tag, Object o) {
+        if (sIsDebug) {
+            Log.d(getTag(tag), o != null ? o.toString() : NULL);
+        }
+    }
+
 }
