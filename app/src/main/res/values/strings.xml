@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">PhotoGallery</string>
+    <string name="photo">Photo</string>
+    <string name="share_photo_extra_subject">You should see this photo!</string>
+    <string name="share_photo">Share photo</string>
 </resources>

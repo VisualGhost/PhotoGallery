@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="recycler_id" type="id"/>
+    <item name="swipe_refresh_id" type="id"/>
+    <item name="photo_id" type="id"/>
+    <item name="photo_grid_layout_id" type="id"/>
+    <item name="photo_viewer_id" type="id"/>
+    <item name="photo_share_id" type="id"/>
+</resources>
