@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide;
 import com.photogallery.PhotoViewerActivity;
 import com.photogallery.R;
 import com.photogallery.networking.Photo;
+import com.photogallery.view.PhotoViewerContract;
 
 public class PhotoCellController extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -33,11 +34,11 @@ public class PhotoCellController extends RecyclerView.ViewHolder implements View
     public void onClick(View view) {
         if (mPhotoUrl != null) {
             Context context = mPhoto.getContext();
-            Intent intent = new Intent("com.photogallery.show.photo");
-            intent.putExtra(PhotoViewerActivity.PHOTO_NAME, mPhotoName);
-            intent.putExtra(PhotoViewerActivity.PHOTO_URL, mPhotoUrl);
-            intent.putExtra(PhotoViewerActivity.USER_NAME, mUserName);
-            intent.putExtra(PhotoViewerActivity.CAMERA, mCamera);
+            Intent intent = new Intent(PhotoViewerContract.ACTION);
+            intent.putExtra(PhotoViewerContract.PHOTO_NAME, mPhotoName);
+            intent.putExtra(PhotoViewerContract.PHOTO_URL, mPhotoUrl);
+            intent.putExtra(PhotoViewerContract.USER_NAME, mUserName);
+            intent.putExtra(PhotoViewerContract.CAMERA, mCamera);
             context.startActivity(intent);
         }
     }

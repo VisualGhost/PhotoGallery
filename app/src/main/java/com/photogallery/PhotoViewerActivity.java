@@ -10,12 +10,9 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 
-public class PhotoViewerActivity extends AppCompatActivity {
+import static com.photogallery.view.PhotoViewerContract.PHOTO_URL;
 
-    public static final String PHOTO_URL = "photo_url";
-    public static final String PHOTO_NAME = "photo_name";
-    public static final String USER_NAME = "user_name";
-    public static final String CAMERA = "camera";
+public class PhotoViewerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
