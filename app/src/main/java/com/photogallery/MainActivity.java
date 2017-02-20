@@ -12,9 +12,11 @@ import com.photogallery.view.layout.PhotoGalleryLayout;
 import com.photogallery.view.pagination.PaginationListener;
 
 public class MainActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>, PaginationListener {
+        LoaderManager.LoaderCallbacks<Cursor>,
+        PaginationListener {
 
-    private static int PHOTO_LOADER_ID = 0;
+    private static final int PHOTO_LOADER_ID = 1;
+
     private PhotoAdapter mAdapter;
     private PhotoGalleryLayout mPhotoGalleryLayout;
 

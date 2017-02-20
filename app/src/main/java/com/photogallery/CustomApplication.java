@@ -3,6 +3,7 @@ package com.photogallery;
 
 import android.app.Application;
 
+import com.facebook.stetho.Stetho;
 import com.photogallery.di.AppComponent;
 import com.photogallery.di.DIHelper;
 import com.photogallery.util.DebugLogger;
@@ -14,6 +15,9 @@ public class CustomApplication extends Application {
         super.onCreate();
         DIHelper.init(this);
         initLogging();
+        if (BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this);
+        }
     }
 
     public static AppComponent getAppComponent() {

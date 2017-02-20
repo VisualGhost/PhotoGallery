@@ -11,7 +11,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.photogallery.R;
-import com.photogallery.database.DBHelper;
+import com.photogallery.database.DBContractor;
 import com.photogallery.util.Util;
 import com.photogallery.view.PhotoViewerContract;
 
@@ -45,10 +45,10 @@ public class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnC
     }
 
     public void bindModel(Cursor cursor) {
-        mPhotoUrl = getValue(DBHelper.Columns.URL, cursor);
-        mPhotoName = getValue(DBHelper.Columns.NAME, cursor);
-        mCamera = getValue(DBHelper.Columns.CAMERA, cursor);
-        mUserName = getValue(DBHelper.Columns.USER, cursor);
+        mPhotoUrl = getValue(DBContractor.COLUMN_URL, cursor);
+        mPhotoName = getValue(DBContractor.COLUMN_NAME, cursor);
+        mCamera = getValue(DBContractor.COLUMN_CAMERA, cursor);
+        mUserName = getValue(DBContractor.COLUMN_USER, cursor);
         if (!TextUtils.isEmpty(mPhotoUrl)) {
             Glide
                     .with(mPhoto.getContext())

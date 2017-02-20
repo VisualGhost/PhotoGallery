@@ -24,21 +24,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
     private final Context mContext;
 
-    public interface Tables {
-        String PHOTO = "photo";
-        String PAGE = "page";
-    }
-
-    public interface Columns {
-
-        String NAME = "name";
-        String URL = "url";
-        String USER = "user";
-        String CAMERA = "camera";
-        String LOADED_PAGE = "page";
-
-    }
-
     public DBHelper(Context context) {
         super(context, DATABASE_NAME, null, SCHEMA_VERSION);
         mContext = context;

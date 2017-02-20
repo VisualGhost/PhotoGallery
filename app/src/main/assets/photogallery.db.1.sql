@@ -7,6 +7,9 @@ user TEXT,
 camera TEXT
 );
 
-CREATE TABLE page (
-page NUMERIC
+CREATE TABLE pages (
+id INTEGER,
+currentpage INTEGER,
+totalpage INTEGER,
+stamp INTEGER
 );
