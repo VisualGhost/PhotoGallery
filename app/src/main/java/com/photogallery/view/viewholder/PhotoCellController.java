@@ -53,7 +53,7 @@ public class PhotoCellController extends RecyclerView.ViewHolder implements View
                     .with(mPhoto.getContext())
                     .load(mPhotoUrl)
                     .centerCrop()
-                    .placeholder(R.drawable.ic_healing_blue_24dp)
+                    .placeholder(R.drawable.ic_photo_dark_gray_24dp)
                     .crossFade()
                     .into(mPhoto);
         }
