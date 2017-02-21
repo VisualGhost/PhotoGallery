@@ -6,6 +6,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 
+import com.photogallery.database.DBContractor;
 import com.photogallery.loader.PhotoLoader;
 import com.photogallery.view.adapter.PhotoAdapter;
 import com.photogallery.view.layout.PhotoGalleryLayout;
@@ -38,9 +39,18 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+        if (data.moveToLast()) {
+            int currentPageIndex = data.getColumnIndex(DBContractor.COLUMN_CURRENT_PAGE);
+            int currentPage = currentPageIndex != -1 ? data.getInt(currentPageIndex) : -1;
+            mPhotoGalleryLayout.setCurrentPage(currentPage);
+
+            int totalPageIndex = data.getColumnIndex(DBContractor.COLUMN_TOTAL_PAGE);
+            int totalPages = totalPageIndex != -1 ? data.getInt(totalPageIndex) : -1;
+            mPhotoGalleryLayout.setTotalPage(totalPages);
+        }
+
         mAdapter.setData(data);
-        //mPhotoGalleryLayout.setCurrentPage(data.getCurrentPageNumber());
-        //mPhotoGalleryLayout.setTotalPage(data.getTotalPageNumber());
     }
 
     @Override

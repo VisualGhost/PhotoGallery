@@ -85,16 +85,15 @@ public class PhotoGalleryLayout extends RelativeLayout {
         mRecyclerView.setAdapter(adapter);
     }
 
-    public void setCurrentPage(String page) {
-        int newPage = Integer.parseInt(page);
-        boolean isNewItems = mCurrentPage < newPage;
+    public void setCurrentPage(int page) {
+        boolean isUpToDateData = mCurrentPage <= page;
         DebugLogger.d(TAG, "old page: " + mCurrentPage + ", current page: " + page);
-        mIsWaitingItems = !isNewItems;
-        mCurrentPage = newPage;
+        mIsWaitingItems = !isUpToDateData;
+        mCurrentPage = page;
     }
 
-    public void setTotalPage(String page) {
-        mTotalPage = Integer.parseInt(page);
+    public void setTotalPage(int page) {
+        mTotalPage = page;
     }
 
     public void setPaginationListener(PaginationListener paginationListener) {

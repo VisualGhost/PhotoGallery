@@ -23,14 +23,14 @@ public class PhotoLoader extends AsyncTaskLoader<Cursor> {
 
     private static final String TAG = PhotoLoader.class.getSimpleName();
 
-    private Cursor mCursor;
-
     @Inject
     public ApiClient mApiClient;
     @Inject
     public DBHelper mDBHelper;
 
     private volatile int mPageToLoad = 1;
+
+    private Cursor mCursor;
 
     public PhotoLoader(Context context) {
         super(context);
@@ -42,16 +42,15 @@ public class PhotoLoader extends AsyncTaskLoader<Cursor> {
 
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT " + DBContractor.COLUMN_STAMP + " FROM " + DBContractor.TABLE_PAGE + " WHERE " + DBContractor.COLUMN_STAMP + " = ?", new String[]{String.valueOf(hashCode())});
+        Cursor cursor = db.rawQuery("SELECT " + DBContractor.COLUMN_STAMP + " FROM " + DBContractor.TABLE_PHOTO + " WHERE " + DBContractor.COLUMN_STAMP + " = ?", new String[]{String.valueOf(hashCode())});
 
         if (cursor.getCount() == 0) {
             DebugLogger.d(TAG, "CLEAN DB");
-            cleanDb(db);
+            deleteAllRows(db);
         }
-
         cursor.close();
 
-        cursor = db.rawQuery("SELECT " + DBContractor.COLUMN_ID + " FROM " + DBContractor.TABLE_PAGE + " WHERE " + DBContractor.COLUMN_CURRENT_PAGE + " = ?", new String[]{String.valueOf(mPageToLoad)});
+        cursor = db.rawQuery("SELECT " + DBContractor.COLUMN_CURRENT_PAGE + " FROM " + DBContractor.TABLE_PHOTO + " WHERE " + DBContractor.COLUMN_CURRENT_PAGE + " = ?", new String[]{String.valueOf(mPageToLoad)});
 
         if (cursor.getCount() == 0) {
             ParsedModel parsedModel = mApiClient.call(mPageToLoad);
@@ -71,9 +70,8 @@ public class PhotoLoader extends AsyncTaskLoader<Cursor> {
         return db.rawQuery("SELECT * FROM " + DBContractor.TABLE_PHOTO, null);
     }
 
-    private void cleanDb(SQLiteDatabase db) {
+    private void deleteAllRows(SQLiteDatabase db) {
         db.delete(DBContractor.TABLE_PHOTO, null, null);
-        db.delete(DBContractor.TABLE_PAGE, null, null);
     }
 
     private void transaction(SQLiteDatabase db, List<Photo> list, int currentPage, int totalPages) {
@@ -90,27 +88,21 @@ public class PhotoLoader extends AsyncTaskLoader<Cursor> {
     }
 
     private void transactionBody(SQLiteDatabase db, List<Photo> list, int currentPage, int totalPages) {
-        savePhotos(db, list);
-        savePages(db, currentPage, totalPages);
+        savePhotos(db, list, currentPage, totalPages);
     }
 
-    private void savePhotos(SQLiteDatabase db, List<Photo> list) {
+    private void savePhotos(SQLiteDatabase db, List<Photo> list, int currentPage, int totalPages) {
         for (Photo photo : list) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DBContractor.COLUMN_NAME, photo.getName());
             contentValues.put(DBContractor.COLUMN_URL, photo.getImageUrl());
             contentValues.put(DBContractor.COLUMN_CAMERA, photo.getCamera());
             contentValues.put(DBContractor.COLUMN_USER, photo.getUser().getFullName());
+            contentValues.put(DBContractor.COLUMN_CURRENT_PAGE, currentPage);
+            contentValues.put(DBContractor.COLUMN_TOTAL_PAGE, totalPages);
+            contentValues.put(DBContractor.COLUMN_STAMP, hashCode());
             db.insert(DBContractor.TABLE_PHOTO, null, contentValues);
         }
-    }
-
-    private void savePages(SQLiteDatabase db, int currentPage, int totalPages) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(DBContractor.COLUMN_CURRENT_PAGE, currentPage);
-        contentValues.put(DBContractor.COLUMN_TOTAL_PAGE, totalPages);
-        contentValues.put(DBContractor.COLUMN_STAMP, hashCode());
-        db.insert(DBContractor.TABLE_PAGE, null, contentValues);
     }
 
     @Override
@@ -124,26 +116,17 @@ public class PhotoLoader extends AsyncTaskLoader<Cursor> {
 
     @Override
     protected void onStartLoading() {
-        if (mCursor != null) {
-            DebugLogger.d(TAG, "start loading: " + mCursor.isClosed());
-        } else {
-            DebugLogger.d(TAG, "start loading");
-        }
-        if (mCursor != null && !mCursor.isClosed()) {
-            deliverResult(mCursor);
-        }
-        if (takeContentChanged() || mCursor == null || mCursor.isClosed()) {
-            DebugLogger.d(TAG, "forceLoad");
-            forceLoad();
-        }
+        DebugLogger.d(TAG, "start loading");
+        forceLoad();
     }
 
     @Override
     protected void onReset() {
         DebugLogger.d(TAG, "reset");
         onStopLoading();
-        mCursor.close();
-        mCursor = null;
+        if (mCursor != null) {
+            mCursor.close();
+        }
     }
 
     @Override
