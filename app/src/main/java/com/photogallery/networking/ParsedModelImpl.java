@@ -6,11 +6,13 @@ import java.util.List;
 class ParsedModelImpl implements ParsedModel {
 
     private ReceivedData mReceivedData;
+    private boolean mIsDataValid;
 
     private static final String INVALID_PAGE_NUMBER = "-1";
 
     ParsedModelImpl(ReceivedData receivedData) {
         mReceivedData = receivedData;
+        mIsDataValid = mReceivedData != null;
     }
 
     @Override
@@ -26,5 +28,10 @@ class ParsedModelImpl implements ParsedModel {
     @Override
     public List<Photo> getPhotoList() {
         return mReceivedData != null ? mReceivedData.getPhotos() : Collections.<Photo>emptyList();
+    }
+
+    @Override
+    public boolean isDataValid() {
+        return mIsDataValid;
     }
 }

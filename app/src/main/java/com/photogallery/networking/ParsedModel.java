@@ -11,4 +11,6 @@ public interface ParsedModel {
 
     List<Photo> getPhotoList();
 
+    boolean isDataValid();
+
 }

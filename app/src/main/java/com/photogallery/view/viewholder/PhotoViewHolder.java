@@ -51,7 +51,7 @@ public class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnC
         mUserName = getValue(DBContractor.COLUMN_USER, cursor);
         if (!TextUtils.isEmpty(mPhotoUrl)) {
             Glide
-                    .with(mPhoto.getContext())
+                    .with(mPhoto.getContext().getApplicationContext())
                     .load(mPhotoUrl)
                     .centerCrop()
                     .placeholder(R.drawable.ic_photo_dark_gray_24dp)
