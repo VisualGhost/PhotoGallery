@@ -59,4 +59,10 @@ public class DebugLogger {
         }
     }
 
+    public static void w(String tag, String message) {
+        if (sIsDebug) {
+            Log.w(getTag(tag), message != null ? message : NULL);
+        }
+    }
+
 }

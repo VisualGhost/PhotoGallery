@@ -3,18 +3,19 @@ package com.photogallery.view.viewholder;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.photogallery.PhotoViewerActivity;
 import com.photogallery.R;
-import com.photogallery.networking.Photo;
+import com.photogallery.database.DBContractor;
+import com.photogallery.util.Util;
 import com.photogallery.view.PhotoViewerContract;
 
-public class PhotoCellController extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private ImageView mPhoto;
 
@@ -23,7 +24,7 @@ public class PhotoCellController extends RecyclerView.ViewHolder implements View
     private String mCamera;
     private String mUserName;
 
-    public PhotoCellController(View itemView) {
+    public PhotoViewHolder(View itemView) {
         super(itemView);
 
         mPhoto = (ImageView) itemView.findViewById(R.id.photo_id);
@@ -43,11 +44,11 @@ public class PhotoCellController extends RecyclerView.ViewHolder implements View
         }
     }
 
-    public void bindModel(Photo photo) {
-        mPhotoUrl = photo.getImageUrl();
-        mPhotoName = photo.getName();
-        mCamera = photo.getCamera();
-        mUserName = photo.getUser().getFullName();
+    public void bindModel(Cursor cursor) {
+        mPhotoUrl = getValue(DBContractor.COLUMN_URL, cursor);
+        mPhotoName = getValue(DBContractor.COLUMN_NAME, cursor);
+        mCamera = getValue(DBContractor.COLUMN_CAMERA, cursor);
+        mUserName = getValue(DBContractor.COLUMN_USER, cursor);
         if (!TextUtils.isEmpty(mPhotoUrl)) {
             Glide
                     .with(mPhoto.getContext())
@@ -56,6 +57,15 @@ public class PhotoCellController extends RecyclerView.ViewHolder implements View
                     .placeholder(R.drawable.ic_photo_dark_gray_24dp)
                     .crossFade()
                     .into(mPhoto);
+        }
+    }
+
+    private String getValue(String column, Cursor cursor) {
+        int index = cursor.getColumnIndex(column);
+        if (index != -1) {
+            return cursor.getString(index);
+        } else {
+            return Util.EMPTY;
         }
     }
 }
