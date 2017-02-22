@@ -3,12 +3,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@id/photo_viewer_id"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/share_photo"
-        />
+    <include layout="@layout/photo_in_activity"/>
 
     <TextView
         android:id="@id/photo_name_id"

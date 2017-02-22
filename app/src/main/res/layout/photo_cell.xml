@@ -19,14 +19,7 @@
 
         >
 
-        <ImageView
-            android:id="@id/photo_id"
-            android:layout_width="@dimen/photo_width"
-            android:layout_height="@dimen/photo_width"
-            android:layout_gravity="center"
-            android:contentDescription="@string/photo"
-            android:gravity="center"
-            />
+        <include layout="@layout/photo_in_list"/>
 
     </android.support.v7.widget.CardView>
 </LinearLayout>

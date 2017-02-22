@@ -1,9 +1,11 @@
 package com.photogallery.view.viewholder;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
@@ -41,8 +43,15 @@ public class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnC
             intent.putExtra(PhotoViewerContract.PHOTO_URL, mPhotoUrl);
             intent.putExtra(PhotoViewerContract.USER_NAME, mUserName);
             intent.putExtra(PhotoViewerContract.CAMERA, mCamera);
-            context.startActivity(intent);
+            startActivity(context, intent);
         }
+    }
+
+    private void startActivity(Context context, Intent intent) {
+        String sharedElementName = context.getString(R.string.share_photo);
+        ActivityOptionsCompat options = ActivityOptionsCompat.
+                makeSceneTransitionAnimation((Activity) context, mPhotoView, sharedElementName);
+        context.startActivity(intent, options.toBundle());
     }
 
     public void bindModel(Cursor cursor) {

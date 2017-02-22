@@ -23,8 +23,8 @@ public class PhotoViewerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photo_viewer);
 
+        setContentView(R.layout.activity_photo_viewer);
         Intent intent = getIntent();
 
         TextView photoName = (TextView) findViewById(R.id.photo_name_id);

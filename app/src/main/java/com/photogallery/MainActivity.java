@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         mAdapter = new PhotoAdapter();
         mPhotoGalleryLayout = (PhotoGalleryLayout) findViewById(R.id.photo_grid_layout_id);
