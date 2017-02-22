@@ -5,10 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
 import android.support.v4.content.AsyncTaskLoader;
 
 import com.photogallery.CustomApplication;
@@ -20,8 +16,8 @@ import com.photogallery.networking.Photo;
 import com.photogallery.util.DebugLogger;
 
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 
@@ -36,65 +32,35 @@ public class PhotoLoader extends AsyncTaskLoader<Cursor> {
     @Inject
     public DBHelper mDBHelper;
 
-    private final int mHashCode;
     private Cursor mCursor;
-
-    private BlockingQueue<Integer> mPagesQue;
-    private HandlerThread mHandlerThread;
-    private Handler mHandler;
+    private final AtomicBoolean mIsCleanCache;
+    private final ConcurrentLinkedQueue<Integer> mPagesQue;
 
     public PhotoLoader(Context context) {
         super(context);
         CustomApplication.getAppComponent().inject(this);
-        mPagesQue = new LinkedBlockingQueue<>();
-        mHandlerThread = new HandlerThread("", android.os.Process.THREAD_PRIORITY_BACKGROUND);
-        mHandlerThread.start();
-        Looper looper = mHandlerThread.getLooper();
-
-        mHandler = new Handler(looper) {
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-
-                int page = msg.arg1;
-                if (!mPagesQue.contains(page)) {
-                    mPagesQue.offer(page);
-                    startLoading();
-                }
-            }
-
-            private void startLoading() {
-                Handler uiHandler = new Handler(Looper.getMainLooper());
-                uiHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isStarted()) {
-                            forceLoad();
-                        }
-                    }
-                });
-            }
-        };
-        mHashCode = hashCode();
+        mPagesQue = new ConcurrentLinkedQueue<>();
+        mPagesQue.add(INITIAL_PAGE);
+        mIsCleanCache = new AtomicBoolean(true);
     }
 
     @Override
     public Cursor loadInBackground() {
 
-        DebugLogger.d(TAG, "loadInBackground: " + Thread.currentThread().getName());
+        DebugLogger.d(TAG, "loadInBackground: " + Thread.currentThread().getName() + ", " + mPagesQue);
 
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         boolean isDataCleaned = false;
 
-        int pageToLoad;
+        Integer integer = mPagesQue.poll();
+        int pageToLoad = integer != null ? integer : NOT_VALID_PAGE;
 
-        if (isDeleteCash(db, mHashCode)) {
+        if (mIsCleanCache.get()) {
+            mIsCleanCache.set(false);
             DebugLogger.d(TAG, "CLEAN DB");
             deleteAllRows(db);
             isDataCleaned = true;
             pageToLoad = INITIAL_PAGE;
-        } else {
-            pageToLoad = mPagesQue.size() > 0 ? mPagesQue.poll() : NOT_VALID_PAGE;
         }
 
         DebugLogger.d(TAG, "page: " + pageToLoad);
@@ -111,24 +77,6 @@ public class PhotoLoader extends AsyncTaskLoader<Cursor> {
         }
 
         return db.rawQuery("SELECT * FROM " + DBContractor.TABLE_PHOTO, null);
-    }
-
-    /**
-     * Delete the cache when new loader is created
-     */
-    private boolean isDeleteCash(SQLiteDatabase db, int stamp) {
-        Cursor cursor = null;
-        try {
-            cursor = db.rawQuery("SELECT " + DBContractor.COLUMN_STAMP
-                            + " FROM " + DBContractor.TABLE_PHOTO
-                            + " WHERE " + DBContractor.COLUMN_STAMP + " = ?",
-                    new String[]{String.valueOf(stamp)});
-            return cursor.getCount() == 0;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
     }
 
     private void deleteAllRows(SQLiteDatabase db) {
@@ -182,7 +130,6 @@ public class PhotoLoader extends AsyncTaskLoader<Cursor> {
             contentValues.put(DBContractor.COLUMN_USER, photo.getUser().getFullName());
             contentValues.put(DBContractor.COLUMN_CURRENT_PAGE, currentPage);
             contentValues.put(DBContractor.COLUMN_TOTAL_PAGE, totalPages);
-            contentValues.put(DBContractor.COLUMN_STAMP, hashCode());
             db.insert(DBContractor.TABLE_PHOTO, null, contentValues);
         }
     }
@@ -205,8 +152,6 @@ public class PhotoLoader extends AsyncTaskLoader<Cursor> {
     @Override
     protected void onReset() {
         DebugLogger.d(TAG, "reset");
-        mHandlerThread.quit();
-        mHandler.removeCallbacksAndMessages(null);
         onStopLoading();
         if (mCursor != null) {
             mCursor.close();
@@ -220,9 +165,10 @@ public class PhotoLoader extends AsyncTaskLoader<Cursor> {
     }
 
     public void loadPage(int page) {
-        DebugLogger.d(TAG, "UI, load page: " + page);
-        Message message = Message.obtain();
-        message.arg1 = page;
-        mHandler.sendMessage(message);
+        DebugLogger.d(TAG, "UI: load page " + page + ", " + mPagesQue);
+        if (!mPagesQue.contains(page)) {
+            mPagesQue.add(page);
+            forceLoad();
+        }
     }
 }

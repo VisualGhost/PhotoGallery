@@ -10,6 +10,5 @@ public class DBContractor {
     public static final String COLUMN_CAMERA = "camera";
     public static final String COLUMN_CURRENT_PAGE = "currentpage";
     public static final String COLUMN_TOTAL_PAGE = "totalpage";
-    public static final String COLUMN_STAMP = "stamp";
 
 }

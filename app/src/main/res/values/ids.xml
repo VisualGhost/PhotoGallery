@@ -6,4 +6,7 @@
     <item name="photo_grid_layout_id" type="id"/>
     <item name="photo_viewer_id" type="id"/>
     <item name="photo_share_id" type="id"/>
+    <item name="photo_name_id" type="id"/>
+    <item name="camera_id" type="id"/>
+    <item name="user_name_id" type="id"/>
 </resources>

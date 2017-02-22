@@ -63,7 +63,6 @@ public class DBHelper extends SQLiteOpenHelper {
             for (String line; (line = reader.readLine()) != null; ) {
                 DebugLogger.d(TAG, "Reading line -> " + line);
 
-                // Ignore empty lines
                 if (!TextUtils.isEmpty(line) && !line.startsWith("--")) {
                     statement.append(line.trim());
                 }

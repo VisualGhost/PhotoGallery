@@ -6,7 +6,6 @@ url TEXT,
 user TEXT,
 camera TEXT,
 currentpage INTEGER,
-totalpage INTEGER,
-stamp INTEGER
+totalpage INTEGER
 );
 

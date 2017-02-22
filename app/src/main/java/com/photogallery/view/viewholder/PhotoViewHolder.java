@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.photogallery.R;
 import com.photogallery.database.DBContractor;
 import com.photogallery.util.Util;
@@ -17,7 +18,7 @@ import com.photogallery.view.PhotoViewerContract;
 
 public class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private ImageView mPhoto;
+    private ImageView mPhotoView;
 
     private String mPhotoUrl;
     private String mPhotoName;
@@ -27,14 +28,14 @@ public class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnC
     public PhotoViewHolder(View itemView) {
         super(itemView);
 
-        mPhoto = (ImageView) itemView.findViewById(R.id.photo_id);
+        mPhotoView = (ImageView) itemView.findViewById(R.id.photo_id);
         itemView.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         if (mPhotoUrl != null) {
-            Context context = mPhoto.getContext();
+            Context context = mPhotoView.getContext();
             Intent intent = new Intent(PhotoViewerContract.ACTION);
             intent.putExtra(PhotoViewerContract.PHOTO_NAME, mPhotoName);
             intent.putExtra(PhotoViewerContract.PHOTO_URL, mPhotoUrl);
@@ -51,12 +52,13 @@ public class PhotoViewHolder extends RecyclerView.ViewHolder implements View.OnC
         mUserName = getValue(DBContractor.COLUMN_USER, cursor);
         if (!TextUtils.isEmpty(mPhotoUrl)) {
             Glide
-                    .with(mPhoto.getContext().getApplicationContext())
+                    .with(mPhotoView.getContext().getApplicationContext())
                     .load(mPhotoUrl)
                     .centerCrop()
                     .placeholder(R.drawable.ic_photo_dark_gray_24dp)
                     .crossFade()
-                    .into(mPhoto);
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                    .into(mPhotoView);
         }
     }
 
