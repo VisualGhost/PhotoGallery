@@ -12,6 +12,33 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    def signingPropFile = rootProject.file('signing.properties')
+    def Properties signingProps = new Properties()
+
+    if (signingPropFile.canRead()) {
+
+        signingProps.load(new FileInputStream(signingPropFile))
+
+        signingConfigs {
+            release {
+                storeFile rootProject.file('release.keystore')
+                keyAlias signingProps['KEY_ALIAS']
+                storePassword signingProps['STORE_PASSWORD']
+                keyPassword signingProps['KEY_PASSWORD']
+            }
+        }
+    } else {
+        signingConfigs {
+            release {
+                storeFile rootProject.file('default-release.keystore')
+                keyAlias "default-release"
+                storePassword "0"
+                keyPassword "0"
+            }
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
